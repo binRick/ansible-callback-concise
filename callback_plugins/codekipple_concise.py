@@ -74,6 +74,7 @@ class CallbackModule(CallbackBase):
         self._play = None
         self._last_task_banner = None
         self._last_task_name = None
+        #self.show_custom_stats = True
         self._task_type_cache = {}
         super(CallbackModule, self).__init__()
         yaml.representer.BaseRepresenter.represent_scalar = my_represent_scalar
@@ -322,7 +323,8 @@ class CallbackModule(CallbackBase):
 
 
         # print custom stats if required
-        if stats.custom and self.show_custom_stats:
+        if False:
+#        if stats.custom: # and self.show_custom_stats:
             self.banner("CUSTOM STATS: ")
             # per host
             # TODO: come up with 'pretty format'
@@ -359,7 +361,7 @@ class CallbackModule(CallbackBase):
             if 'warnings' in res and res['warnings']:
                 for warning in res['warnings']:
                     msg = stringc(self.rightArrow + " " + "[warning]: " + warning, C.COLOR_WARN)
-                    self._display.display(self.padd_text(msg, 2))
+                    self._display.display(self.padd_text(msg, 2), stderr=True)
                 del res['warnings']
             if 'deprecations' in res and res['deprecations']:
                 for warning in res['deprecations']:
