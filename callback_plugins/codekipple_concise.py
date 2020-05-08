@@ -23,6 +23,10 @@ from ansible.utils.color import stringc, hostcolor, colorize
 from pprint import pprint
 from terminaltables import AsciiTable
 
+DUMPED_WIDTH = 120
+__SHOW_DIFF = False
+
+
 # from http://stackoverflow.com/a/15423007/115478
 def should_use_block(value):
     """Returns true if string should be in block format"""
@@ -119,14 +123,14 @@ class CallbackModule(CallbackBase):
 
         if abridged_result:
             dumped += '\n'
-            dumped += to_text(yaml.dump(abridged_result, allow_unicode=True, width=1000, Dumper=AnsibleDumper, default_flow_style=False))
+            dumped += to_text(yaml.dump(abridged_result, allow_unicode=True, width=DUMPED_WIDTH, Dumper=AnsibleDumper, default_flow_style=False))
 
         # indent by a couple of spaces
         dumped = '\n  '.join(dumped.split('\n')).rstrip()
         return dumped
 
     def _serialize_diff(self, diff):
-        return to_text(yaml.dump(diff, allow_unicode=True, width=1000, Dumper=AnsibleDumper, default_flow_style=False))
+        return to_text(yaml.dump(diff, allow_unicode=True, width=DUMPED_WIDTH, Dumper=AnsibleDumper, default_flow_style=False))
 
     def padd_text(self, text, paddVal):
         output = ""
@@ -352,8 +356,9 @@ class CallbackModule(CallbackBase):
         self._display.display("%s | UNREACHABLE! => %s" % (result._host.get_name(), self._dump_results(result._result, indent=4)), color=C.COLOR_UNREACHABLE)
 
     def v2_on_file_diff(self, result):
-        if 'diff' in result._result and result._result['diff']:
-            self._display.display(self._get_diff(result._result['diff']))
+        if __SHOW_DIFF:
+            if 'diff' in result._result and result._result['diff']:
+                self._display.display(self._get_diff(result._result['diff']))
 
     def _handle_warnings(self, res):
         ''' display warnings, if enabled and any exist in the result '''
